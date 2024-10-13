@@ -1,9 +1,12 @@
+import base64
+import io
 from flask import Flask, render_template, request, jsonify, redirect
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 import random
 import string
+import segno
 
 load_dotenv()
 
@@ -99,12 +102,25 @@ def shortenAPI():
         else:
             print('Keyword is present, throwing error')
             return jsonify({'shortUrl': 'The Keyword Already Exists, Choose a Different One'})
+    
+        # Generate the short URL
+        short_url = f"{request.host_url}{keyword}"
 
+        # Create QR code and convert to base64-encoded PNG
+        qr = segno.make_qr(short_url)
+        buffer = io.BytesIO()
+        qr.save(buffer, kind='png', scale=5, border=2)  # Save QR as PNG in memory
+        buffer.seek(0)  # Move the cursor to the start of the stream
+        qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+    
     if request.method == 'GET':
         print('Called get method on shorten end-point, throwing error')
         return "GET Method Not Allowed On This End Point"
 
-    return jsonify({'shortUrl': str(request.host_url)+str(keyword)})
+    return jsonify(
+        {'shortUrl': short_url,
+        'qrcode': f"data:image/png;base64,{qr_base64}"}
+        )
 
 
 @app.route('/analytics', methods=['GET', 'POST'])

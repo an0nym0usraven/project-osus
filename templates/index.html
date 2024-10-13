@@ -173,6 +173,20 @@
       word-wrap: break-word;  
   overflow-wrap: break-word;
     }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* margin-top: 20px;
+      height: 200px; Adjust this value as needed */
+    }
+
+    #qrcode img {
+      max-width: 100%; /* Ensure it scales nicely */
+      max-height: 100%;
+      object-fit: contain;  
+    }
   </style>
 </head>
 
@@ -205,6 +219,7 @@
         <button type="submit" class="btn">Shorten</button>
       </form>
       <div class="mt-3" id="shortUrl"></div>
+      <div class="mt-3" id="qrcode"></div>
     </div>
   </main>
 
@@ -232,6 +247,7 @@
       const longUrl = document.getElementById('longUrl').value;
       const keyword = document.getElementById('keyword').value;
       const shortUrlContainer = document.getElementById('shortUrl');
+      const qrcodeContainer = document.getElementById('qrcode');
 
       shortUrlContainer.innerHTML = 'Shortening...';
 
@@ -253,6 +269,7 @@
                     Shortened URL: <a href="${data.shortUrl}" class="short-url" target="_blank">${data.shortUrl}</a>
                     <i class="fas fa-copy copy-icon" title="Copy to clipboard"></i>
                 `;
+        qrcodeContainer.innerHTML = `<img src="${data.qrcode}" alt="QR Code" />`;
 
         // Add click event for the copy icon
         const copyIcon = document.querySelector('.copy-icon');
